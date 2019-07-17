@@ -9,6 +9,7 @@ tripsRouter
 .route('/')
 .get(expressTryCatchWrapper(async (req, res) => {
     const knex = req.app.get("db");
+
     const result= await TripsService.getTrips(knex)
        res.json(result)
 
