@@ -28,7 +28,6 @@ const createAuthToken = function (user) {
           return res.status(400).json({ error: msg })
         }
         req.user = user
-        const knex = req.app.get("db");
         const authToken = createAuthToken(JSON.stringify(req.user));
         delete req.user.password
         res.json({ authToken, user: req.user });
