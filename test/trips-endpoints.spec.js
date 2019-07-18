@@ -7,7 +7,7 @@ const {TEST_DB_URL}= require('../src/config')
 const knex =require('knex')
 let db 
 let authToken 
-
+let userId
 const doLogin = () => supertest(app)
   .post(
     '/api/auth/login')
@@ -21,6 +21,7 @@ const doLogin = () => supertest(app)
   .expect('Content-Type', /json/)
   .then(r => {
     authToken = r.body.authToken
+    userId=r.body.user.id
   })
 
   describe("Trips Endpoints", function (){
@@ -50,5 +51,42 @@ const doLogin = () => supertest(app)
                 });
             });
           });
+         context(`Given there are trips in the database`, async ()=>{
+             const testUsers=makeUsersArray()
+             const testTrips= makeTripsArray()
+             const testPlaces= makePlacesArray()
+             beforeEach("insert trips", () => {
+                return db
+                .into('users')
+                .insert(testUsers)
+                .then(() => {
+                  return db
+                    .into('trips')
+                    .insert(testTrips)
+                })
+                .then(() => {
+                    return db
+                      .into('places')
+                      .insert(testPlaces)
+                  })
+              });
+              it(`get /api/trips responds with 200 and all of the trips and places for the user`, ()=>{
+               
+                return supertest(app)
+                .get("/api/trips")
+                .set({ Authorization: `Bearer ${authToken}` })
+                .expect(200)
+                .then(response=>{
+                    const {data}=response.body
+                    data.forEach((i, index)=>{
+                       if(index < data.length - 2) {
+                           expect(data[index].user_id=== userId).to.be
+                           .true;
+                       }
+                    })
+                })
+              })
+         })
+          
       })
   })
