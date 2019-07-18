@@ -4,11 +4,11 @@ const populateTripPlaces = async (trip, knex) => {
     .select("*")
     .where("trip_id", trip.id);
 
-  const placesPromise = placeQuery.then([
+  const placesPromise = placeQuery.then(
     place => {
       trip.places = place;
     }
-  ]);
+  );
   promises.push(placesPromise);
 
   return Promise.all(promises);

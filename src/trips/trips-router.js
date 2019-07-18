@@ -11,7 +11,7 @@ tripsRouter
 .route('/')
 .get(jwtAuth, expressTryCatchWrapper(async (req, res) => {
     const knex = req.app.get("db");
-    const user= JSON.parse(req.user)
+    const user= req.user
     const userId=user.id
     console.log(userId)
     const result= await TripsService.getTrips(knex, userId)
