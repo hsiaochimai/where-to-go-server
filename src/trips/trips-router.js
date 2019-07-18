@@ -19,6 +19,15 @@ tripsRouter.use(jsonParser)
 
 }))
 
+tripsRouter
+.route('/add')
+.post(jwtAuth,jsonParser,  expressTryCatchWrapper(async (req, res, next) => {
+  const { trip } = JSON.parse(req.body)
+  const knex = req.app.get("db");
+  const savedTrip = await TripService.upsertTrip(knex, trip)
+  res.json(savedTrip);
+}))
+
 
 
 module.exports = tripsRouter;
