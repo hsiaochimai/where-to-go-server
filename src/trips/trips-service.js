@@ -30,5 +30,6 @@ const TripsService = {
       data: result
     };
   }
+  
 };
 module.exports = TripsService;

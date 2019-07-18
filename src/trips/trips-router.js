@@ -7,11 +7,11 @@ const jsonParser = bodyParser.json();
 const jwtAuth = passport.authenticate('jwt', { session: false });
 const tripsRouter = express.Router();
 
-tripsRouter
+tripsRouter.use(jsonParser)
 .route('/')
 .get(jwtAuth, expressTryCatchWrapper(async (req, res) => {
     const knex = req.app.get("db");
-    const user= req.user
+    const user= JSON.parse(req.user)
     const userId=user.id
     console.log(userId)
     const result= await TripsService.getTrips(knex, userId)
