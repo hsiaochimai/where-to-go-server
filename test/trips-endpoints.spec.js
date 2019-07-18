@@ -70,7 +70,7 @@ const doLogin = () => supertest(app)
                       .insert(testPlaces)
                   })
               });
-              it(`get /api/trips responds with 200 and all of the trips and places for the user`, ()=>{
+              it(`get /api/trips responds with 200 with trips for the user that is logged in`, ()=>{
                
                 return supertest(app)
                 .get("/api/trips")
