@@ -4,6 +4,7 @@ const app = require("../src/app");
 const { expect, assert } = require("chai");
 const {makeUsersArray, makeTripsArray, makePlacesArray}= require('./trips.fixture')
 const {TEST_DB_URL}= require('../src/config')
+const TripsService =require('../src/trips/trips-service')
 const knex =require('knex')
 let db 
 let authToken 
@@ -55,6 +56,7 @@ const doLogin = () => supertest(app)
              const testUsers=makeUsersArray()
              const testTrips= makeTripsArray()
              const testPlaces= makePlacesArray()
+             
              beforeEach("insert trips", () => {
                 return db
                 .into('users')
@@ -70,6 +72,7 @@ const doLogin = () => supertest(app)
                       .insert(testPlaces)
                   })
               });
+              afterEach("clean the table", () => db.raw('TRUNCATE places, trips, users RESTART IDENTITY CASCADE'));
               it(`get /api/trips responds with 200 with trips for the user that is logged in`, ()=>{
                
                 return supertest(app)
@@ -85,6 +88,34 @@ const doLogin = () => supertest(app)
                        }
                     })
                 })
+              })
+
+              it(` updates a trip`, async ()=>{
+                
+        let {places, ...trip } = await TripsService.getTripByID(db, 1);
+        trip.name= "Portland"
+        trip.numofdays= 3
+        const body={
+            trip
+        };
+        
+        return supertest(app)
+          .post(`/api/trips/add`)
+          .send(body.trip)
+          .set({ Authorization: `Bearer ${authToken}` })
+          .then(r => 
+           JSON.parse(r.text)
+        )
+        .then(async res=>{
+            "id name numofdays user_id completed"
+            .split(" ")
+            .forEach(fieldName => {
+              let v = res[fieldName];
+              let v2 = trip[fieldName];
+              expect(v.toString()).to.equal(v2.toString());
+            });
+        })
+
               })
          })
           
