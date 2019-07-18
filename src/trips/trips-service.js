@@ -21,7 +21,7 @@ const TripsService = {
           .where("id", "=", id)
           .first();
         await populateTripPlaces(trip, knex);
-        return user;
+        return trip;
       },
   upsertTrip: async(knex,trip)=>{
     Object.keys(trip).forEach(k => {
@@ -41,7 +41,7 @@ const TripsService = {
           return returnedInfo;
         });
       } else {
-        await knex("trip")
+        await knex("trips")
           .where("id", "=", id)
           .update(trip)
           .then(returnedInfo => {
