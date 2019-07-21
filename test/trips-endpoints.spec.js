@@ -118,7 +118,7 @@ describe("Trips Endpoints", function() {
         const idToRemove = 2;
 
         return supertest(app)
-          .delete(`/${idToRemove}`)
+          .delete(`/api/trips/${idToRemove}`)
           .set({ Authorization: `Bearer ${authToken}` })
           .expect(204)
           .then(
