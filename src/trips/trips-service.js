@@ -58,6 +58,41 @@ const TripsService = {
     console.log(`deleted trip id ${id}`);
   })
 },
+upsertPlace: async(knex, place, tripID)=>{
+  Object.keys(place).forEach(k => {
+    if (place[k] === "") {
+      place[k] = null;
+    }
+  });
+  let { id } = place;
+  const isNew = id === -1;
+  delete place.id;
+  if (isNew) {
+    let q = knex("places").insert(place, ["id"]);
+
+    await q.then(returnedInfo => {
+      id = returnedInfo[0].id; //the INSERT ID
+      console.log(`hello`,returnedInfo)
+      return returnedInfo;
+    });
+  } else {
+    await knex("places")
+      .where("id", "=", id)
+      .update(place)
+      .then(returnedInfo => {
+        return returnedInfo;
+      });
+  }
+  return TripsService.getTripByID(knex, tripID);
+},
+deletePlace: async (knex,id)=>{
+  await knex("places")
+  .where("id", "=", id)
+  .del()
+  .then(() => {
+    console.log(`deleted place id ${id}`);
+  })
+},
   getTrips: async (knex, id) => {
     let trips = knex("trips");
     trips.where("user_id", "=", id);

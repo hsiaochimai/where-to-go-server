@@ -44,6 +44,25 @@ tripsRouter
     })
     .catch(next);
 }))
+tripsRouter
+.route('/:id/upsertPlace')
+.post(jwtAuth,jsonParser,  expressTryCatchWrapper(async (req, res, next) => {
+  const place  = req.body
+const knex = req.app.get("db");
+const savedPlace = await TripsService.upsertPlace(knex, place,req.params.id )
+res.json(savedPlace);
+}))
+tripsRouter
+.route('/:id/place/:placeID')
+.delete(jwtAuth, expressTryCatchWrapper(async (req, res, next) => {
+ 
+const knex = req.app.get("db");
+ await TripsService.deletePlace(knex, req.params.placeID )
+.then(() => {
+  res.status(204)
+    .end()
 
-
+})
+.catch(next);
+}))
 module.exports = tripsRouter;
