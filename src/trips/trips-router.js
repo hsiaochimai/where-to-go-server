@@ -20,14 +20,25 @@ tripsRouter.use(jsonParser)
 }))
 
 tripsRouter
-.route('/add')
+.route('/create')
 .post(jwtAuth,jsonParser,  expressTryCatchWrapper(async (req, res, next) => {
     const trip  = req.body
   const knex = req.app.get("db");
   const savedTrip = await TripsService.upsertTrip(knex, trip)
   res.json(savedTrip);
 }))
+tripsRouter
+.route('/:id/remove')
+.delete(jwtAuth, expressTryCatchWrapper(async (req, res, next) => {
+  const knex = req.app.get("db");
+  await TripsService.deleteTrip(knex, req.params.id)
+    .then(() => {
+      res.status(204)
+        .end()
 
+    })
+    .catch(next);
+}))
 
 
 module.exports = tripsRouter;

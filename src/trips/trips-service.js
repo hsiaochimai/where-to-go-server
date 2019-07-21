@@ -50,6 +50,14 @@ const TripsService = {
       }
       return TripsService.getTripByID(knex, id);
   },  
+  deleteTrip: async (knex,id)=>{
+  await knex("trips")
+  .where("id", "=", id)
+  .del()
+  .then(() => {
+    console.log(`deleted trip id ${id}`);
+  })
+},
   getTrips: async (knex, id) => {
     let trips = knex("trips");
     trips.where("user_id", "=", id);
