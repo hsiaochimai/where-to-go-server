@@ -28,7 +28,12 @@ tripsRouter
   res.json(savedTrip);
 }))
 tripsRouter
-.route('/:id/remove')
+.route('/:id')
+.get(jwtAuth, expressTryCatchWrapper(async (req, res) => {
+  const knex = req.app.get("db");
+  const result = await TripsService.getTripByID(knex, req.params.id)
+  res.json(result)
+}))
 .delete(jwtAuth, expressTryCatchWrapper(async (req, res, next) => {
   const knex = req.app.get("db");
   await TripsService.deleteTrip(knex, req.params.id)

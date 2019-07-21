@@ -114,6 +114,50 @@ describe("Trips Endpoints", function() {
               });
           });
       });
+      it("Deletes a trip", async () => {
+        const idToRemove = 2;
+
+        return supertest(app)
+          .delete(`/${idToRemove}`)
+          .set({ Authorization: `Bearer ${authToken}` })
+          .expect(204)
+          .then(
+            supertest(app)
+              .get(`/api/trips/${idToRemove}`)
+              .expect(404)
+          )
+
+      });
+      // it("Creates a trip", async () => {
+       
+      //   let trip= 
+      //  { id:-1,
+      //   name : "Richmond",
+      //   numofdays: 3,
+      //   user_id : 1,
+      //   completed: false
+        
+      //   }
+      //   const body = {
+      //     trip
+      //   };
+      //   console.log(`hello`,trip)
+      //   return supertest(app)
+      //     .post(`/api/trips/create`)
+      //     .set({ Authorization: `Bearer ${authToken}` })
+      //     .send(body.trip)
+      //     .then(r => {console.log(r.text)
+      //     })
+      //     .then(async res => {
+      //       "id name numofdays user_id completed"
+      //         .split(" ")
+      //         .forEach(fieldName => {
+      //           let v = res[fieldName];
+      //           let v2 = trip[fieldName];
+      //           expect(v.toString()).to.equal(v2.toString());
+      //         });
+      //     });
+      // });
     });
   });
 });
