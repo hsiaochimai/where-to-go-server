@@ -18,7 +18,11 @@ const populateDb = async (db) =>{
   const testTrips = makeTripsArray();
   const testPlaces = makePlacesArray();
   await db.raw("TRUNCATE places, trips, users RESTART IDENTITY CASCADE")
-       await db
+  await db.raw(`
+    SELECT setval('trips_id_seq', max(id))
+    FROM  trips
+    `)  
+  return await db
           .into("users")
           .insert(testUsers)
           .then(() => {
@@ -27,6 +31,7 @@ const populateDb = async (db) =>{
           .then(() => {
             return db.into("places").insert(testPlaces);
           });
+          
 }
 const doLogin = () =>
   supertest(app)
@@ -76,11 +81,14 @@ describe("Trips Endpoints", function() {
  
 
       beforeEach("insert trips", async () => {
-        await populateDb(db)
-      });
-      afterEach("clean the table", async  () =>
-       await db.raw("TRUNCATE places, trips, users RESTART IDENTITY CASCADE")
-      );
+        return await populateDb(db)
+        
+      })
+      afterEach("clean the table", async  () =>{
+    
+      return await db.raw("TRUNCATE places, trips, users RESTART IDENTITY CASCADE")
+       
+    });
       it(`get /api/trips responds with 200 with trips for the user that is logged in`, () => {
         return supertest(app)
           .get("/api/trips")
@@ -134,7 +142,8 @@ describe("Trips Endpoints", function() {
 
       });
       it("Creates a trip", async () => {
-       
+        await populateDb(db)
+
         let trip= 
        { id:-1,
         name : "Richmond",
@@ -151,7 +160,7 @@ describe("Trips Endpoints", function() {
           .post(`/api/trips/create`)
           .set({ Authorization: `Bearer ${authToken}` })
           .send(body.trip)
-          .then(r => {console.log(r.text)
+          .then(r => {console.log(`xxx`,r.text)
           })
           .then(async res => {
             "id name numofdays user_id completed"
