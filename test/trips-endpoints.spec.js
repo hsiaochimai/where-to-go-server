@@ -13,6 +13,21 @@ const knex = require("knex");
 let db;
 let authToken;
 let userId;
+const populateDb = async (db) =>{
+  const testUsers = makeUsersArray();
+  const testTrips = makeTripsArray();
+  const testPlaces = makePlacesArray();
+  await db.raw("TRUNCATE places, trips, users RESTART IDENTITY CASCADE")
+       await db
+          .into("users")
+          .insert(testUsers)
+          .then(() => {
+            return db.into("trips").insert(testTrips);
+          })
+          .then(() => {
+            return db.into("places").insert(testPlaces);
+          });
+}
 const doLogin = () =>
   supertest(app)
     .post("/api/auth/login")
@@ -42,8 +57,8 @@ describe("Trips Endpoints", function() {
     await db.destroy();
     console.log("server closed");
   });
-  before("clean the table", () =>
-    db.raw("TRUNCATE places, trips, users RESTART IDENTITY CASCADE")
+  before("clean the table", async () =>
+    await db.raw("TRUNCATE places, trips, users RESTART IDENTITY CASCADE")
   );
 
   describe(`GET/api/trips`, async () => {
@@ -58,20 +73,10 @@ describe("Trips Endpoints", function() {
       });
     });
     context(`Given there are trips in the database`, async () => {
-      const testUsers = makeUsersArray();
-      const testTrips = makeTripsArray();
-      const testPlaces = makePlacesArray();
+ 
 
       beforeEach("insert trips", async () => {
-        return db
-          .into("users")
-          .insert(testUsers)
-          .then(() => {
-            return db.into("trips").insert(testTrips);
-          })
-          .then(() => {
-            return db.into("places").insert(testPlaces);
-          });
+        await populateDb(db)
       });
       afterEach("clean the table", async  () =>
        await db.raw("TRUNCATE places, trips, users RESTART IDENTITY CASCADE")
