@@ -33,7 +33,7 @@ const populateDb = async (db) =>{
           });
  
           await db.raw(`
-          SELECT setval('trips_id_seq', (SELECT MAX(id) FROM trips)+100)
+          SELECT setval('trips_id_seq', (SELECT MAX(id) FROM trips)+1)
             FROM  trips
             `).then(()=>{
               console.log(`SEQ (trips) changed!`)
@@ -155,37 +155,37 @@ describe("Trips Endpoints", function() {
           )
 
       });
-      // it("Creates a trip", async () => {
-      //   await populateDb(db)
+      it("Creates a trip", async () => {
+        await populateDb(db)
 
-      //   let trip= 
-      //  { id:-1,
-      //   name : "Richmond",
-      //   numofdays: 3,
-      //   user_id : 1,
-      //   completed: false
+        let trip= 
+       { id:-1,
+        name : "Richmond",
+        numofdays: 3,
+        user_id : 1,
+        completed: false
         
-      //   }
-      //   const body = {
-      //     trip
-      //   };
-      //   console.log(`hello`,trip)
-      //   return supertest(app)
-      //     .post(`/api/trips/create`)
-      //     .set({ Authorization: `Bearer ${authToken}` })
-      //     .send(body.trip)
-      //     .then(r => {console.log(`xxx`,r.text)
-      //     })
-      //     .then(async res => {
-      //       "id name numofdays user_id completed"
-      //         .split(" ")
-      //         .forEach(fieldName => {
-      //           let v = res[fieldName];
-      //           let v2 = trip[fieldName];
-      //           expect(v.toString()).to.equal(v2.toString());
-      //         });
-      //     });
-      // });
+        }
+        const body = {
+          trip
+        };
+        console.log(`hello`,trip)
+        return supertest(app)
+          .post(`/api/trips/create`)
+          .set({ Authorization: `Bearer ${authToken}` })
+          .send(body.trip)
+          .then(r => JSON.parse(r.text)
+          )
+          .then(async res => {
+            "name numofdays user_id completed"
+              .split(" ")
+              .forEach(fieldName => {
+                let v = res[fieldName];
+                let v2 = trip[fieldName];
+                expect(v.toString()).to.equal(v2.toString());
+              });
+          });
+      });
     });
   });
 });
