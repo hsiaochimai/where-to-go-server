@@ -18,11 +18,11 @@ const populateDb = async (db) =>{
   const testTrips = makeTripsArray();
   const testPlaces = makePlacesArray();
   await db.raw("TRUNCATE places, trips, users RESTART IDENTITY CASCADE")
-  await db.raw(`
-    SELECT setval('trips_id_seq', max(id))
-    FROM  trips
-    `)  
-  return await db
+  .then(()=>{
+    console.log(`Truncated!`)
+  })
+ 
+   await db
           .into("users")
           .insert(testUsers)
           .then(() => {
@@ -31,7 +31,21 @@ const populateDb = async (db) =>{
           .then(() => {
             return db.into("places").insert(testPlaces);
           });
-          
+ 
+          await db.raw(`
+          SELECT setval('trips_id_seq', (SELECT MAX(id) FROM trips)+100)
+            FROM  trips
+            `).then(()=>{
+              console.log(`SEQ (trips) changed!`)
+            })  
+            await db.raw(`
+            SELECT setval('places_id_seq', max(id))
+            FROM  places
+            `).then(()=>{
+              console.log(`SEQ (places) changed!`)
+            })            
+
+
 }
 const doLogin = () =>
   supertest(app)

@@ -5,8 +5,8 @@ module.exports = {
   NODE_ENV: process.env.NODE_ENV || "development",
   DB_URL:
     process.env.DATABASE_URL ||
-    "postgresql://hsiaochimai@localhost:5432/where-to-go",
+    "postgresql://tudor@localhost:5432/where-to-go",
   TEST_DB_URL:
     process.env.TEST_DB_URL ||
-    "postgresql://hsiaochimai@localhost:5432/where-to-go-test"
+    "postgresql://tudor@localhost:5432/where-to-go-test"
 };
