@@ -60,6 +60,13 @@ const TripsService = {
         console.log(`deleted trip id ${id}`);
       })
   },
+  getPlaceByID: async (knex, id) => {
+    const place = await knex("places")
+      .select("*")
+      .where("id", "=", id)
+      .first();
+    return place;
+  },
   upsertPlace: async (knex, place, tripID) => {
     Object.keys(place).forEach(k => {
       if (place[k] === "") {

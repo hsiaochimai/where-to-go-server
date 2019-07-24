@@ -50,8 +50,6 @@ const populateDb = async (db) =>{
 const doLogin = () =>
   supertest(app)
     .post("/api/auth/login")
-
-    // method: 'POST',
     .send({
       email: "demo@demo.com",
       password: "demo"
@@ -93,7 +91,6 @@ describe("Trips Endpoints", function() {
     });
     context(`Given there are trips in the database`, async () => {
  
-
       beforeEach("insert trips", async () => {
         return await populateDb(db)
         
@@ -182,6 +179,33 @@ describe("Trips Endpoints", function() {
               .forEach(fieldName => {
                 let v = res[fieldName];
                 let v2 = trip[fieldName];
+                expect(v.toString()).to.equal(v2.toString());
+              });
+          });
+      });
+      it(` updates a place`, async () => {
+        let {...place}   = await TripsService.getPlaceByID(db, 1);
+       place.name= "Powells books"
+       place.street_address= "1005 W Burnside St"
+       place.city= "Portland"
+       place.transportation= "Taxi"
+       place.notes= "Cool independent book store that Jenn told me about"
+        
+        const body = {
+          place
+        };
+        return supertest(app)
+          .post(`/api/trips/1/upsertPlace`)
+          .send(body.place)
+          .set({ Authorization: `Bearer ${authToken}` })
+          .then(r => JSON.parse(r.text))
+          .then(async res => {
+            let result=res.places.filter(p=>p.id===place.id)
+            "id name street_address city transportation notes"
+              .split(" ")
+              .forEach(fieldName => {
+                let v = result[0][fieldName];
+                let v2 = place[fieldName];
                 expect(v.toString()).to.equal(v2.toString());
               });
           });
