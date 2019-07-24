@@ -54,6 +54,11 @@ res.json(savedPlace);
 }))
 tripsRouter
 .route('/:id/place/:placeID')
+.get(jwtAuth, expressTryCatchWrapper(async (req, res) => {
+  const knex = req.app.get("db");
+  const result = await TripsService.getPlaceByID(knex, req.params.placeID)
+  console.log(res.json(result))
+}))
 .delete(jwtAuth, expressTryCatchWrapper(async (req, res, next) => {
  
 const knex = req.app.get("db");

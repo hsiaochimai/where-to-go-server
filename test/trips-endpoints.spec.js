@@ -95,11 +95,7 @@ describe("Trips Endpoints", function() {
         return await populateDb(db)
         
       })
-      afterEach("clean the table", async  () =>{
     
-      return await db.raw("TRUNCATE places, trips, users RESTART IDENTITY CASCADE")
-       
-    });
       it(`get /api/trips responds with 200 with trips for the user that is logged in`, () => {
         return supertest(app)
           .get("/api/trips")
@@ -240,6 +236,23 @@ describe("Trips Endpoints", function() {
               });
           });
       });
+      it("Deletes a place", async () => {
+        const idToRemove = 2;
+
+        return supertest(app)
+          .delete(`/api/trips/1/place/${idToRemove}`)
+          .set({ Authorization: `Bearer ${authToken}` })
+          .then(
+            supertest(app)
+              .get(`/api/trips/1`)
+              .set({ Authorization: `Bearer ${authToken}` })
+              .then(res=>{
+              expect(res.body.places.includes(idToRemove)).to.equal(false)
+            }
+          )
+
+      );
     });
   });
 });
+})
