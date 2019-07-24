@@ -210,6 +210,36 @@ describe("Trips Endpoints", function() {
               });
           });
       });
+      it(` creates a place`, async () => {
+        let newPlace=   
+       {id:-1,
+         name: "Penisula Park",
+         trip_id: 1,
+       street_address: "103 N Penisula Park Dr",
+       city: "Portland",
+       transportation: "Bike",
+       notes: "Cool rose garden",
+      visited:false}
+        
+        const body = {
+          newPlace
+        };
+        return supertest(app)
+          .post(`/api/trips/1/upsertPlace`)
+          .send(body.newPlace)
+          .set({ Authorization: `Bearer ${authToken}` })
+          .then(r => JSON.parse(r.text))
+          .then(async res => {
+            let result=res.places.filter(p=>p.name===newPlace.name)
+            "name street_address city transportation notes"
+              .split(" ")
+              .forEach(fieldName => {
+                let v = result[0][fieldName];
+                let v2 = newPlace[fieldName];
+                expect(v.toString()).to.equal(v2.toString());
+              });
+          });
+      });
     });
   });
 });
