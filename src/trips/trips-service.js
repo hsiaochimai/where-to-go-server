@@ -85,6 +85,12 @@ const TripsService = {
     const isNew = id === -1;
     delete place.id;
     if (isNew) {
+      await knex.schema.raw(`
+          SELECT setval('places_id_seq', (SELECT MAX(id) FROM places)+1)
+            FROM  places
+            `).then(()=>{
+              console.log(`SEQ (places) changed!`)
+            })
       let q = knex("places").insert(place, ["id"]);
 
       await q.then(returnedInfo => {
