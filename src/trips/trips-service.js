@@ -35,6 +35,12 @@ const TripsService = {
     
     if (isNew) {
       console.log(`this is trip`, trip)
+      await knex.schema.raw(`
+          SELECT setval('trips_id_seq', (SELECT MAX(id) FROM trips)+1)
+            FROM  trips
+            `).then(()=>{
+              console.log(`SEQ (trips) changed!`)
+            })
       let q = knex("trips").insert(trip, ["id"]);
       
       
@@ -42,7 +48,8 @@ const TripsService = {
         console.log(`Saving trip:`, JSON.stringify(trip, 2, 2))
         id = returnedInfo[0].id; //the INSERT ID
         return returnedInfo;
-      });
+      })
+      
     } else {
       await knex("trips")
         .where("id", "=", id)
