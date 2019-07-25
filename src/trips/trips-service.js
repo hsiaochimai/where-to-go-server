@@ -34,6 +34,7 @@ const TripsService = {
     delete trip.id;
     
     if (isNew) {
+      console.log(`this is trip`, trip)
       let q = knex("trips").insert(trip, ["id"]);
       
       
