@@ -34,18 +34,15 @@ const TripsService = {
     delete trip.id;
     
     if (isNew) {
-      console.log(`this is trip`, trip)
       await knex.schema.raw(`
           SELECT setval('trips_id_seq', (SELECT MAX(id) FROM trips)+1)
             FROM  trips
             `).then(()=>{
-              console.log(`SEQ (trips) changed!`)
             })
       let q = knex("trips").insert(trip, ["id"]);
       
       
       await q.then(returnedInfo => {
-        console.log(`Saving trip:`, JSON.stringify(trip, 2, 2))
         id = returnedInfo[0].id; //the INSERT ID
         return returnedInfo;
       })
@@ -65,7 +62,7 @@ const TripsService = {
       .where("id", "=", id)
       .del()
       .then(() => {
-        console.log(`deleted trip id ${id}`);
+       
       })
   },
   getPlaceByID: async (knex, id) => {
@@ -89,13 +86,11 @@ const TripsService = {
           SELECT setval('places_id_seq', (SELECT MAX(id) FROM places)+1)
             FROM  places
             `).then(()=>{
-              console.log(`SEQ (places) changed!`)
             })
       let q = knex("places").insert(place, ["id"]);
 
       await q.then(returnedInfo => {
         id = returnedInfo[0].id; //the INSERT ID
-        console.log(`hello`, returnedInfo)
         return returnedInfo;
       });
     } else {
@@ -120,7 +115,6 @@ const TripsService = {
     let trips = knex("trips");
     trips.where("user_id", "=", id);
     let result = [];
-    console.log(trips.toString());
     await trips.then(data => {
       result = data;
     });

@@ -13,7 +13,6 @@ tripsRouter.use(jsonParser)
     const knex = req.app.get("db");
     const user= JSON.parse(req.user)
     const userId=user.id
-    console.log(userId)
     const result= await TripsService.getTrips(knex, userId)
        res.json(result)
 

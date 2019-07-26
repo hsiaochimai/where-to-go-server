@@ -162,7 +162,6 @@ describe("Trips Endpoints", function() {
         const body = {
           trip
         };
-        console.log(`hello`,trip)
         return supertest(app)
           .post(`/api/trips/create`)
           .set({ Authorization: `Bearer ${authToken}` })
