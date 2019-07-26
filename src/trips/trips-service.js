@@ -122,7 +122,7 @@ const TripsService = {
     result.forEach(trip => promises.push(populateTripPlaces(trip, knex)));
     await Promise.all(promises);
     return {
-      data: result
+      trips: result
     };
   }
 
